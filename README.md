@@ -98,6 +98,28 @@ gradlew.bat build
 
 The plugin JAR will be at: `DotNetAgentPlugin/build/libs/tuoni-example-plugin-dotnet-payload-0.0.1.jar`
 
+### Building with Docker (recommended for quick testing)
+
+The entire project can be built inside Docker using the provided Makefile. This requires only Docker and Make — no Windows, Visual Studio, or Java installation needed.
+
+```bash
+# Build the plugin JAR and agent EXE
+make build
+
+# Build and install to Tuoni server (copies JAR to /srv/tuoni/plugins/server/ and restarts)
+make install
+
+# Remove build artifacts
+make clean
+
+# List all available targets
+make help
+```
+
+Build outputs are extracted to the `build/` directory:
+- `build/tuoni-example-plugin-dotnet-payload-0.0.1.jar` — the plugin JAR
+- `build/DotNetAgent.exe` — the compiled .NET agent
+
 ### Build Output Summary
 
 | Artifact | Path | Description |
