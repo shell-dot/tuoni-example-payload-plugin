@@ -35,7 +35,7 @@ tasks {
         // Add the required attributes for the Tuoni plugin
         attributes(
             mapOf(
-                "Plugin-Id" to "shelldot.commands.examples.dotnetpayload",
+                "Plugin-Id" to "shelldot.payloads.examples.dotnetpayload",
                 "Plugin-Version" to project.version.toString(),
                 "Plugin-Provider" to "shelldot",
                 "Plugin-Name" to ".NET Payload Plugin",

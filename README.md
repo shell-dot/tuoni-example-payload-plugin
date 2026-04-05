@@ -133,7 +133,7 @@ Build outputs are extracted to the `build/` directory:
 1. Build both the agent and plugin JAR as described above
 2. Copy `tuoni-example-plugin-dotnet-payload-0.0.1.jar` to your Tuoni server's plugin directory
 3. The plugin registers itself with the following metadata:
-   - **Plugin ID:** `shelldot.commands.examples.dotnetpayload`
+   - **Plugin ID:** `shelldot.payloads.examples.dotnetpayload`
    - **Plugin Name:** `.NET Payload Plugin`
    - **Plugin Version:** `0.0.1`
    - **Plugin Provider:** `shelldot`
