@@ -23,6 +23,7 @@ namespace DotNetAgent
         private static string _hostname;
         private static UInt32 _ansiCodepage = 0xFF;
         private static string _integrity;
+        private static long? _payloadId;
 
         private const int TOKEN_QUERY = 0x0008;
         private const int TokenIntegrityLevel = 25;
@@ -45,6 +46,7 @@ namespace DotNetAgent
         private const byte TLV_ENCRYPTION_TYPE = 0x11;
         private const byte TLV_AGENT_TYPE = 0x40;
         private const byte TLV_AGENT_VERSION = 0x41;
+        private const byte TLV_PAYLOAD_ID = 0x43;
 
         private const byte ENCRYPTION_TYPE_AES_GCM = 0x02;
         private const string AGENT_TYPE = "CUSTOM";
@@ -100,6 +102,8 @@ namespace DotNetAgent
             _hostname = Environment.MachineName;
         }
 
+        public static void SetPayloadId(long? payloadId) => _payloadId = payloadId;
+
         public static byte[] GetBuffer()
         {
             TLV parent = new TLV(TLV_ID);
@@ -136,6 +140,8 @@ namespace DotNetAgent
             parent.AddChild(new TLV(TLV_ENCRYPTION_TYPE, new byte[] { ENCRYPTION_TYPE_AES_GCM }));
             parent.AddChild(new TLV(TLV_AGENT_TYPE, Encoding.UTF8.GetBytes(AGENT_TYPE)));
             parent.AddChild(new TLV(TLV_AGENT_VERSION, BitConverter.GetBytes(AGENT_VERSION)));
+            if (_payloadId.HasValue)
+                parent.AddChild(new TLV(TLV_PAYLOAD_ID, BitConverter.GetBytes(_payloadId.Value)));
             return parent.GetFullBuffer();
         }
 

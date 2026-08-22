@@ -1,11 +1,9 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using static DotNetAgent.MessagesManager;
-using static DotNetAgent.RunningCommandsManager;
 
 namespace DotNetAgent
 {
@@ -140,42 +138,20 @@ namespace DotNetAgent
                     return;
                 }
 
-                string dir = conf.GetChild(TLV_CONF_PATH).GetAsString();
-                uint depth = 1;
-                if (conf.HasChild(TLV_CONF_DEPTH))
-                {
-                    depth = conf.GetChild(TLV_CONF_DEPTH).GetAsUInt32();
-                }
+                string pathSpec = conf.GetChild(TLV_CONF_PATH).GetAsString();
+                uint depth = conf.HasChild(TLV_CONF_DEPTH)
+                    ? conf.GetChild(TLV_CONF_DEPTH).GetAsUInt32()
+                    : 1;
 
                 TLV resultTlv = new TLV(TLV_COMMAND_CONF);
-                bool success = NativeCommandLsHelper.ListDirFiles(dir, depth, resultTlv, true);
-
-                if (success)
-                {
-                    string absDir;
-                    try
-                    {
-                        absDir = Path.GetFullPath(dir);
-                        if (File.Exists(dir))
-                        {
-                            absDir = Path.GetDirectoryName(absDir);
-                        }
-                        else if (!Directory.Exists(absDir))
-                        {
-                            absDir = "";
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        absDir = "";
-                    }
-                    resultTlv.AddChild(new TLV(TLV_RESULT_PATH, Encoding.UTF8.GetBytes(absDir ?? "")));
-                    MessagesManager.NewResult(commandId, resultTlv.GetFullBuffer(), CommandStatus.SUCCESS, null);
-                }
-                else
+                if (!NativeCommandLsHelper.ListDirFiles(pathSpec, depth, resultTlv, out string enumerationDirectory))
                 {
                     MessagesManager.NewResult(commandId, null, CommandStatus.FAILED, Encoding.UTF8.GetBytes("Failed to list directory"));
+                    return;
                 }
+
+                resultTlv.AddChild(new TLV(TLV_RESULT_PATH, Encoding.UTF8.GetBytes(enumerationDirectory ?? "")));
+                MessagesManager.NewResult(commandId, resultTlv.GetFullBuffer(), CommandStatus.SUCCESS, null);
             }
             catch (Exception ex)
             {
@@ -199,7 +175,7 @@ namespace DotNetAgent
         private static void CommandJobs(uint commandId)
         {
             TLV result = new TLV(TLV_RESULT_OUTER);
-            int thisPid = System.Diagnostics.Process.GetCurrentProcess().Id;
+            int thisPid = Process.GetCurrentProcess().Id;
             foreach (uint id in RunningCommandsManager.GetRunningCommands())
             {
                 TLV cmd = new TLV(TLV_RESULT_OUTER);

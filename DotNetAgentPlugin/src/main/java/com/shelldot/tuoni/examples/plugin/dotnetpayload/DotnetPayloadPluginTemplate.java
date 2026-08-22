@@ -1,6 +1,7 @@
 package com.shelldot.tuoni.examples.plugin.dotnetpayload;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
 
 import com.shelldot.tuoni.examples.plugin.dotnetpayload.configuration.SimpleConfigurationSchema;
@@ -18,7 +19,7 @@ import com.shelldot.tuoni.plugin.sdk.payload.PayloadTemplate;
 import com.shelldot.tuoni.plugin.sdk.payload.PayloadType;
 
 public class DotnetPayloadPluginTemplate implements PayloadTemplate {
-    
+
     private static final String SHELLCODE_PATH = "/templates/DotNetAgent.exe";
 
     @Override
@@ -56,15 +57,20 @@ public class DotnetPayloadPluginTemplate implements PayloadTemplate {
     public Payload createPayload(
             long payloadId, Configuration configuration, List<ListenerShellCode> listenerShellCodes)
             throws SerializationException, ValidationException {
-            return new DotnetPayloadImpl(listenerShellCodes.get(0));        
-    }    
+        ListenerShellCode listenerShellCode = listenerShellCodes.get(0);
+        listenerShellCode.setAgentConfiguration(
+                ByteBuffer.allocate(Long.BYTES)
+                        .order(ByteOrder.LITTLE_ENDIAN)
+                        .putLong(0, payloadId));
+        return new DotnetPayloadImpl(listenerShellCode);
+    }
 
     public class DotnetPayloadImpl implements Payload
     {
         ListenerShellCode listenerShellCode;
 
         public DotnetPayloadImpl(ListenerShellCode listenerShellCode) {
-            this.listenerShellCode = listenerShellCode;            
+            this.listenerShellCode = listenerShellCode;
         }
 
         @Override

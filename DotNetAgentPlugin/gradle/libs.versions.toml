@@ -4,4 +4,4 @@ jackson = "2.19.0"
 
 [libraries]
 tuoni-sdk = { module = "com.shelldot:tuoni-plugin-sdk", version.ref = "tuoni" }
-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson"}
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }

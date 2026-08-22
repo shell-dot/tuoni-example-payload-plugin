@@ -12,6 +12,7 @@ namespace DotNetAgent
         private const byte TLV_TYPE_ENCRYPTED_DATA = 0x13;
         private const byte TLV_TYPE_METADATA_IS_IT_ENCRYPTED = 0x1;
         private const byte TLV_TYPE_IS_IT_REQUEST = 0x1;
+        private const byte TLV_TYPE_AGENT_CONFIGURATION = 0x2;
         private const byte TLV_TYPE_SEQUENCE = 0x2;
         private const byte TLV_TYPE_SHELLCODE = 0x3;
         // TLV_TYPE_DATA, TLV_TYPE_IV, and TLV_TYPE_PIPENAME share value 0x4.
@@ -45,6 +46,14 @@ namespace DotNetAgent
             _pipeName = tlv.GetChild(TLV_TYPE_PIPENAME).GetAsString();
             if (tlv.HasChild(TLV_TYPE_CONF))
                 _conf = tlv.GetChild(TLV_TYPE_CONF).Data;
+            TLV agentConfiguration = tlv.GetChild(TLV_TYPE_AGENT_CONFIGURATION);
+            if (agentConfiguration != null &&
+                (agentConfiguration.IsParent || agentConfiguration.Data == null || agentConfiguration.Data.Length != sizeof(long)))
+            {
+                Logger.Warning("Listener agent configuration must contain exactly 8 bytes for payload ID");
+                return false;
+            }
+            Metadata.SetPayloadId(agentConfiguration?.GetAsInt64());
             return true;
         }
 

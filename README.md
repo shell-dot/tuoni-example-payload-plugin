@@ -158,6 +158,10 @@ The agent uses a two-layer architecture that separates network communication fro
 - **Listener Shellcode** — a shellcode blob provided by the Tuoni framework at deployment time; handles network communication with the C2 server and relays messages to/from the .NET agent via a named pipe
 - **.NET Agent** — the core payload; receives commands over the named pipe, executes them, and queues results for the listener to pick up
 
+### Payload Identity Metadata
+
+When Tuoni creates a payload, the Java plugin writes the SDK `payloadId` to the optional agent configuration (listener child `0x02`) as an eight-byte, little-endian signed integer. The .NET agent reports the same eight bytes as metadata child `0x43`; this payload-specific field remains separate from the global public-key configuration appended by the listener serializer. Older payloads without the optional configuration remain supported and omit `payloadId`, while a present value must be exactly eight bytes or listener configuration loading fails.
+
 ### Encryption
 
 The agent uses a **hybrid encryption** scheme:

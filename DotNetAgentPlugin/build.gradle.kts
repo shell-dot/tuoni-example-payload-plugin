@@ -18,8 +18,6 @@ dependencies {
   implementation(libs.jackson.databind)
 }
 
-tasks.test { useJUnitPlatform() }
-
 java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
 
 tasks {
@@ -30,20 +28,18 @@ tasks {
     archiveBaseName = "tuoni-example-plugin-dotnet-payload"
     archiveClassifier = ""
 
-    doFirst {
-      manifest {
-        // Add the required attributes for the Tuoni plugin
-        attributes(
-            mapOf(
-                "Plugin-Id" to "shelldot.payloads.examples.dotnetpayload",
-                "Plugin-Version" to project.version.toString(),
-                "Plugin-Provider" to "shelldot",
-                "Plugin-Name" to ".NET Payload Plugin",
-                "Plugin-Description" to
-                    "An example plugin with .NET payload.",
-                "Plugin-Url" to "https://docs.shelldot.com",
-            ))
-      }
+    manifest {
+      // Add the required attributes for the Tuoni plugin
+      attributes(
+          mapOf(
+              "Plugin-Id" to "shelldot.payloads.examples.dotnetpayload",
+              "Plugin-Version" to project.version.toString(),
+              "Plugin-Provider" to "shelldot",
+              "Plugin-Name" to ".NET Payload Plugin",
+              "Plugin-Description" to
+                  "An example plugin with .NET payload.",
+              "Plugin-Url" to "https://docs.shelldot.com",
+          ))
     }
   }
   assemble { dependsOn(shadowJar) }
